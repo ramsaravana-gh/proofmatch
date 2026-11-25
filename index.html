@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProofMatch — GitHub vs. Job Description Proof-of-Work Matcher</title>
+  <meta name="description" content="Stop claiming skills. Start proving them. Compare a candidate's GitHub portfolio against any job description with deterministic proof-of-work scoring." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a href="#workspace" class="skip-link">Skip to analysis workspace</a>
+
+  <header class="navbar" role="banner">
+    <div class="container nav-inner">
+      <a href="#" class="brand" aria-label="ProofMatch Home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 7v10l9 5 9-5V7l-9-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+            <path d="M8.5 12.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span class="brand-name">ProofMatch</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#workspace">Workspace</a>
+        <a href="#dashboard-section">Dashboard</a>
+        <a href="#how-it-works">How it works</a>
+      </nav>
+
+      <div class="nav-meta">
+        <span id="nav-ai-pill" class="status-pill status-pill--muted" title="Optional Gemini BYOK status">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="nav-ai-label">AI: Off</span>
+        </span>
+        <span class="status-pill status-pill--theme" title="Dark Mode Active">Dark UI</span>
+        <a href="#workspace" class="btn btn-sm btn-primary">Analyze</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <div class="hero-badge">
+          <span class="badge-dot" aria-hidden="true"></span>
+          Deterministic Proof-of-Work Engine · Zero Backend · Client-Side
+        </div>
+        <h1 id="hero-heading" class="hero-title">Your GitHub is your real resume.</h1>
+        <p class="hero-subtitle">
+          See how convincingly your work proves you can do the job. Stop claiming skills—start proving them with transparent repository evidence.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#workspace" class="btn btn-lg btn-primary">Analyze my portfolio</a>
+          <button type="button" id="hero-demo-btn" class="btn btn-lg btn-secondary">Explore demo</button>
+        </div>
+
+        <div class="hero-metrics" aria-label="Core capabilities">
+          <div class="hero-metric">
+            <strong>5-Factor Scoring</strong>
+            <span>Transparent weighted rubric</span>
+          </div>
+          <div class="hero-metric">
+            <strong>Live GitHub API</strong>
+            <span>No login or server required</span>
+          </div>
+          <div class="hero-metric">
+            <strong>Evidence Tiers</strong>
+            <span>Claimed vs. Demonstrated</span>
+          </div>
+          <div class="hero-metric">
+            <strong>Optional BYOK AI</strong>
+            <span>Gemini REST API ready</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hackathon Demo Strip -->
+    <section class="demo-strip" aria-label="One-click demonstration samples">
+      <div class="container">
+        <div class="demo-bar">
+          <div class="demo-bar-text">
+            <span class="eyebrow">Instant Demo Mode (Works Offline)</span>
+            <p>Test the full deterministic scoring engine immediately with realistic sample portfolios:</p>
+          </div>
+          <div class="demo-buttons">
+            <button type="button" class="btn btn-demo" data-sample="fullstack">
+              <span class="demo-tag">Sample 1</span>
+              Full-Stack Developer
+            </button>
+            <button type="button" class="btn btn-demo" data-sample="ml">
+              <span class="demo-tag">Sample 2</span>
+              Machine Learning Engineer
+            </button>
+            <button type="button" class="btn btn-demo" data-sample="devops">
+              <span class="demo-tag">Sample 3</span>
+              Cloud / DevOps Engineer
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Input Workspace -->
+    <section id="workspace" class="workspace-section" aria-labelledby="workspace-heading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">Analysis Workspace</span>
+            <h2 id="workspace-heading">Compare Job Requirements Against Real Code</h2>
+          </div>
+          <div class="workspace-actions">
+            <button type="button" id="open-manual-repo-btn" class="btn btn-sm btn-ghost">
+              + Manual Repo Entry
+            </button>
+            <button type="button" id="reset-all-btn" class="btn btn-sm btn-ghost">
+              Reset All
+            </button>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <!-- LEFT COLUMN: Inputs -->
+          <div class="card input-card">
+            <form id="analysis-form" novalidate>
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="jd-input">1. Job Description <span class="required">*</span></label>
+                  <span id="jd-char-count" class="hint-text">0 chars</span>
+                </div>
+                <textarea
+                  id="jd-input"
+                  rows="8"
+                  placeholder="Paste the full job description here (requirements, tech stack, responsibilities, qualifications)..."
+                  required
+                ></textarea>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label for="github-username">2. GitHub Username</label>
+                  <input
+                    type="text"
+                    id="github-username"
+                    placeholder="e.g. torvalds or octocat"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <span class="field-help">Fetches up to 12 most recently updated public repos + READMEs.</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="repo-urls">Or Specific Repository URLs</label>
+                  <textarea
+                    id="repo-urls"
+                    rows="2"
+                    placeholder="https://github.com/owner/repo&#10;One URL per line"
+                    spellcheck="false"
+                  ></textarea>
+                  <span class="field-help">Optional: analyze exact repos alongside or instead of a username.</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="resume-text">3. Optional Resume / Claimed Skills</label>
+                  <label for="resume-file" class="file-upload-btn" tabindex="0">Upload .txt / .md</label>
+                  <input type="file" id="resume-file" accept=".txt,.md,.text" class="sr-only" />
+                </div>
+                <textarea
+                  id="resume-text"
+                  rows="3"
+                  placeholder="Optional: paste resume text or claimed skills so ProofMatch can separate 'Claimed' skills from 'Demonstrated' GitHub evidence..."
+                ></textarea>
+                <span class="field-help">Plain text / Markdown files are parsed locally. For PDFs, copy and paste the text above.</span>
+              </div>
+
+              <div id="manual-repos-banner" class="inline-banner hidden" role="status">
+                <div>
+                  <strong id="manual-repos-count">0 manual repositories</strong> queued for analysis.
+                </div>
+                <button type="button" id="clear-manual-repos-btn" class="btn btn-xs btn-ghost">Clear</button>
+              </div>
+
+              <div id="form-error" class="error-banner hidden" role="alert"></div>
+
+              <div class="submit-row">
+                <button type="submit" id="analyze-btn" class="btn btn-lg btn-primary btn-full">
+                  <span class="btn-label">Run Proof-of-Work Analysis</span>
+                  <span class="spinner hidden" aria-hidden="true"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT COLUMN: Preview, Config & BYOK -->
+          <div class="side-stack">
+            <!-- Extracted Skill Preview -->
+            <div class="card">
+              <div class="card-header-row">
+                <h3>Live Job Requirement Preview</h3>
+                <span id="preview-skill-count" class="pill pill-accent">0 skills</span>
+              </div>
+              <p class="card-sub">
+                Requirements are parsed in real time with alias normalization (e.g. Postgres → PostgreSQL, JS → JavaScript).
+              </p>
+              <div id="jd-preview-skills" class="chip-list">
+                <span class="empty-inline">Paste a job description or load a sample to inspect extracted requirements.</span>
+              </div>
+              <div id="jd-preview-meta" class="meta-grid hidden">
+                <div class="meta-box">
+                  <span class="meta-label">Experience</span>
+                  <span id="preview-exp" class="meta-val">Not specified</span>
+                </div>
+                <div class="meta-box">
+                  <span class="meta-label">Education</span>
+                  <span id="preview-edu" class="meta-val">Not specified</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- BYOK AI Configuration -->
+            <div class="card">
+              <div class="card-header-row">
+                <div>
+                  <h3>AI Intelligence — Bring Your Own Key</h3>
+                  <p class="card-sub">Optional Gemini enhancement layered over deterministic scores.</p>
+                </div>
+                <label class="switch" aria-label="Enable AI Intelligence BYOK">
+                  <input type="checkbox" id="byok-toggle" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div id="byok-panel" class="byok-panel hidden">
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="byok-provider">Provider</label>
+                    <select id="byok-provider">
+                      <option value="gemini">Google Gemini (REST API)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="byok-model">Model</label>
+                    <select id="byok-model">
+                      <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                      <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                      <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="byok-key">Gemini API Key</label>
+                  <input
+                    type="password"
+                    id="byok-key"
+                    placeholder="AIza..."
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                </div>
+
+                <div class="privacy-note">
+                  <strong>Privacy Disclosure:</strong> Your key is held only in browser memory for this session, never logged, and sent directly to Google's Gemini API endpoint. Browser-based BYOK exposes entered keys to the browser environment—do not use sensitive production credentials. AI output is advisory and never overwrites deterministic scores.
+                </div>
+              </div>
+            </div>
+
+            <!-- Evidence Methodology -->
+            <div class="card methodology-card">
+              <div class="card-header-row">
+                <h3>Scoring Rubric (100%)</h3>
+                <button type="button" id="open-methodology-btn" class="btn btn-xs btn-ghost">Details</button>
+              </div>
+              <ul class="rubric-list">
+                <li><span>Technical Skill Coverage</span><strong>35%</strong></li>
+                <li><span>Project Evidence Quality</span><strong>25%</strong></li>
+                <li><span>Repository Relevance</span><strong>20%</strong></li>
+                <li><span>Activity &amp; Maintenance</span><strong>10%</strong></li>
+                <li><span>Documentation Quality</span><strong>10%</strong></li>
+              </ul>
+              <p class="caveat-note">
+                Note: Repository metadata and README mentions provide structured signals, not definitive proof of production coding proficiency.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Dashboard -->
+    <section id="dashboard-section" class="dashboard-section" aria-labelledby="dashboard-heading">
+      <div class="container">
+        <!-- Empty State -->
+        <div id="dashboard-empty" class="card empty-state">
+          <div class="empty-icon" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+              <path d="M9 17H7A5 5 0 0 1 7 7h2m6 0h2a5 5 0 1 1 0 10h-2m-7-5h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </div>
+          <h3>No Analysis Yet</h3>
+          <p>Paste a job description and GitHub username above—or click one of the three offline demo buttons—to generate a full proof-of-work report.</p>
+        </div>
+
+        <!-- Loading Skeleton -->
+        <div id="dashboard-loading" class="card loading-state hidden" aria-live="polite">
+          <div class="loading-header">
+            <div class="spinner"></div>
+            <div>
+              <h3 id="loading-status-title">Fetching GitHub portfolio…</h3>
+              <p id="loading-status-sub">Inspecting repositories, languages, topics, and README files.</p>
+            </div>
+          </div>
+          <div class="skeleton-grid">
+            <div class="skeleton-box tall"></div>
+            <div class="skeleton-box"></div>
+            <div class="skeleton-box"></div>
+          </div>
+        </div>
+
+        <!-- Actual Dashboard Content -->
+        <div id="dashboard-results" class="hidden" aria-live="polite">
+          <div class="dashboard-topbar">
+            <div>
+              <div class="title-with-badges">
+                <h2 id="dashboard-heading">Proof-of-Work Report</h2>
+                <span id="demo-mode-badge" class="pill pill-warning hidden">DEMO DATA</span>
+                <span id="ai-enhanced-badge" class="pill pill-purple hidden">AI Enhanced</span>
+              </div>
+              <p id="report-subtitle" class="card-sub"></p>
+            </div>
+
+            <div class="export-actions">
+              <button type="button" id="copy-report-btn" class="btn btn-sm btn-secondary">Copy Report</button>
+              <button type="button" id="export-txt-btn" class="btn btn-sm btn-secondary">Export .TXT</button>
+              <button type="button" id="export-json-btn" class="btn btn-sm btn-secondary">Export .JSON</button>
+            </div>
+          </div>
+
+          <div id="api-warning-banner" class="warning-banner hidden" role="status"></div>
+
+          <!-- Top Summary Row -->
+          <div class="summary-grid">
+            <!-- Overall Score Ring -->
+            <div class="card score-hero-card">
+              <div class="ring-wrapper">
+                <svg class="score-ring" viewBox="0 0 140 140" aria-hidden="true">
+                  <circle class="ring-bg" cx="70" cy="70" r="58" />
+                  <circle id="score-ring-progress" class="ring-fg" cx="70" cy="70" r="58" />
+                </svg>
+                <div class="ring-center">
+                  <span id="overall-score-value" class="score-number">0</span>
+                  <span class="score-max">/ 100</span>
+                </div>
+              </div>
+              <div class="score-hero-info">
+                <span id="overall-verdict-badge" class="verdict-badge">Evaluating</span>
+                <h3 id="overall-verdict-title">Proof-of-Work Match</h3>
+                <p id="overall-verdict-desc" class="card-sub"></p>
+              </div>
+            </div>
+
+            <!-- 5-Dimension Breakdown -->
+            <div class="card dimensions-card">
+              <div class="card-header-row">
+                <h3>Transparent Score Breakdown</h3>
+                <span class="hint-text">Weighted dimensions</span>
+              </div>
+              <div id="dimension-bars" class="dimension-bars"></div>
+            </div>
+          </div>
+
+          <!-- Portfolio Quality & Evidence Classification Strip -->
+          <div class="kpi-grid" id="kpi-grid"></div>
+
+          <!-- Claimed vs Demonstrated vs Inferred vs Unverified -->
+          <div class="card">
+            <div class="card-header-row">
+              <div>
+                <h3>Skill Evidence Matrix</h3>
+                <p class="card-sub">Clear separation between demonstrated code evidence, inferred metadata, claimed skills, and unverified requirements.</p>
+              </div>
+              <div class="legend-row" aria-label="Evidence legend">
+                <span class="ev-badge ev-strong">Strong</span>
+                <span class="ev-badge ev-moderate">Moderate</span>
+                <span class="ev-badge ev-weak">Weak</span>
+                <span class="ev-badge ev-none">Unverified</span>
+              </div>
+            </div>
+            <div id="skill-matrix-list" class="skill-matrix-list"></div>
+          </div>
+
+          <!-- Strongest vs Missing Columns -->
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header-row">
+                <h3>Strongest Matching Competencies</h3>
+                <span id="strong-count-pill" class="pill pill-success">0</span>
+              </div>
+              <div id="strong-skills-list" class="evidence-list"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-header-row">
+                <h3>Missing or Weakly Supported Skills</h3>
+                <span id="missing-count-pill" class="pill pill-danger">0</span>
+              </div>
+              <div id="missing-skills-list" class="evidence-list"></div>
+            </div>
+          </div>
+
+          <!-- Repository Evidence Cards -->
+          <div class="card">
+            <div class="card-header-row">
+              <div>
+                <h3>Repository Evidence Cards</h3>
+                <p class="card-sub">Ranked by relevance to the target job description.</p>
+              </div>
+              <span id="repo-count-pill" class="pill pill-accent">0 repos</span>
+            </div>
+            <div id="repo-cards-grid" class="repo-cards-grid"></div>
+          </div>
+
+          <!-- Actionable Recommendations -->
+          <div class="card">
+            <div class="card-header-row">
+              <div>
+                <h3>Actionable Improvement Plan</h3>
+                <p class="card-sub">Targeted steps generated directly from your missing and weakly supported job requirements.</p>
+              </div>
+            </div>
+            <div id="recommendations-list" class="recommendations-list"></div>
+          </div>
+
+          <!-- Optional AI Intelligence Panel -->
+          <div id="ai-results-card" class="card ai-card hidden">
+            <div class="card-header-row">
+              <div>
+                <span class="eyebrow">AI Intelligence — Advisory Layer</span>
+                <h3>Gemini Recruiter &amp; Portfolio Insights</h3>
+              </div>
+              <span class="pill pill-purple">Unverified AI Commentary</span>
+            </div>
+            <p class="caveat-note">
+              Generated via your Gemini API key. Treat AI commentary as advisory suggestions; deterministic scores above remain the source of truth.
+            </p>
+            <div id="ai-results-content" class="ai-results-content"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-section" aria-labelledby="how-heading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">Methodology</span>
+            <h2 id="how-heading">How ProofMatch Verifies Technical Claims</h2>
+          </div>
+        </div>
+        <div class="steps-grid">
+          <div class="card step-card">
+            <span class="step-num">01</span>
+            <h3>Parse &amp; Normalize JD</h3>
+            <p>Extracts languages, frameworks, cloud, databases, DevOps tools, experience, and education using a weighted taxonomy with alias resolution.</p>
+          </div>
+          <div class="card step-card">
+            <span class="step-num">02</span>
+            <h3>Inspect Real GitHub Data</h3>
+            <p>Queries public GitHub REST endpoints for languages, topics, descriptions, activity dates, stars, forks, and README documentation.</p>
+          </div>
+          <div class="card step-card">
+            <span class="step-num">03</span>
+            <h3>Score Evidence Tiers</h3>
+            <p>Separates demonstrated code signals from README mentions and self-reported resume claims—never presenting unverified skills as proven.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand">
+          <span class="brand-name">ProofMatch</span>
+        </div>
+        <p class="footer-desc">
+          GitHub vs. Job Description Proof-of-Work Matcher. Built with pure HTML5, CSS3, and Vanilla ES6+ JavaScript—zero frameworks, zero backend.
+        </p>
+      </div>
+      <div>
+        <h4>Privacy &amp; Accuracy</h4>
+        <p class="footer-desc">
+          All deterministic analysis runs locally in your browser. Optional Gemini BYOK keys stay in memory only. GitHub metadata provides signals, not absolute proof of engineering skill.
+        </p>
+      </div>
+      <div>
+        <h4>Demo Disclaimer</h4>
+        <p class="footer-desc">
+          Built-in sample portfolios use offline demonstration data clearly labeled as DEMO DATA so judges can evaluate the engine without API limits.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Manual Repository Entry Modal -->
+  <div id="manual-repo-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="manual-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="manual-modal-title">Add Manual Repository Entry</h3>
+        <button type="button" class="icon-btn" data-close-modal="manual-repo-modal" aria-label="Close modal">&times;</button>
+      </div>
+      <p class="card-sub">Useful if GitHub API rate limits are hit or you want to test private/local project evidence.</p>
+      <form id="manual-repo-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="m-repo-name">Repository Name *</label>
+            <input type="text" id="m-repo-name" placeholder="e.g. cloud-invoice-api" required />
+          </div>
+          <div class="form-group">
+            <label for="m-repo-lang">Primary Language *</label>
+            <input type="text" id="m-repo-lang" placeholder="e.g. Python, JavaScript, Go" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="m-repo-topics">Topics / Tags (comma-separated)</label>
+          <input type="text" id="m-repo-topics" placeholder="e.g. docker, postgresql, fastapi, ci-cd" />
+        </div>
+        <div class="form-group">
+          <label for="m-repo-desc">Description</label>
+          <input type="text" id="m-repo-desc" placeholder="Short summary of what this repository builds..." />
+        </div>
+        <div class="form-group">
+          <label for="m-repo-readme">README Excerpt (optional)</label>
+          <textarea id="m-repo-readme" rows="4" placeholder="Paste key README sections (architecture, stack, tests, deployment)..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-close-modal="manual-repo-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Repository</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Methodology Modal -->
+  <div id="methodology-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="method-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="method-modal-title">Proof-of-Work Scoring Methodology</h3>
+        <button type="button" class="icon-btn" data-close-modal="methodology-modal" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="method-body">
+        <p>ProofMatch computes a deterministic 0–100 score across five weighted dimensions without double-counting repeated keywords:</p>
+        <ul>
+          <li><strong>Technical Skill Coverage (35%):</strong> Share of job-required skills backed by repository evidence, weighted by evidence strength.</li>
+          <li><strong>Project Evidence Quality (25%):</strong> Depth of proof—primary language + topics + multi-repo reinforcement score higher than isolated README mentions.</li>
+          <li><strong>Repository Relevance (20%):</strong> How closely the candidate's repositories align with the target role's core stack and responsibilities.</li>
+          <li><strong>Activity &amp; Maintenance (10%):</strong> Recency of repository updates and sustained portfolio activity.</li>
+          <li><strong>Documentation Quality (10%):</strong> Presence of descriptions, topics, and substantive READMEs (architecture, setup, testing notes).</li>
+        </ul>
+        <p class="caveat-note">
+          <strong>Important:</strong> Metadata and README text are useful evidence signals, not definitive proof of production coding proficiency.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close-modal="methodology-modal">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
